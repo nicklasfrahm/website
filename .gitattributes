@@ -1,0 +1,7 @@
+# Enforce linux style line endings.
+* text eol=lf
+# Configure binary files.
+*.ico -text
+*.png -text
+*.jpg -text
+*.jpeg -text
