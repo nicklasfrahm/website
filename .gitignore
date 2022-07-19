@@ -1,0 +1,3 @@
+# Ignore Hugo CMS files.
+.hugo_build.lock
+public/
