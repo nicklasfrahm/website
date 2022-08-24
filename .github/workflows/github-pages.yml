@@ -18,17 +18,20 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Configure Python runtime
-        uses: actions/setup-go@v3
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
         with:
-          go-version: ">=1.18"
-          check-latest: true
+          hugo-version: latest
 
-      - name: Install Hugo
-        run: go install github.com/gohugoio/hugo@latest
+      - uses: actions/cache@v2
+        with:
+          path: /tmp/hugo_cache
+          key: ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
 
       - name: Build website
-        run: hugo
+        run: hugo --minify
 
       - name: Upload static bundle
         uses: actions/upload-artifact@v2
