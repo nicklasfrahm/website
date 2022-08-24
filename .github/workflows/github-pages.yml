@@ -33,34 +33,24 @@ jobs:
       - name: Build website
         run: hugo --minify
 
-      - name: Upload static bundle
-        uses: actions/upload-artifact@v2
-        with:
-          name: bundle
-          path: public
-
-  deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-    steps:
-      - name: Download static bundle
-        uses: actions/download-artifact@v2
-        with:
-          name: bundle
-          path: public
-
-      - name: Configure documentation domain
+      - name: Configure domain
         run: echo $DOMAIN > public/CNAME
         env:
           DOMAIN: ${{ secrets.DOMAIN }}
 
-      - name: Deploy to GitHub Pages
-        uses: crazy-max/ghaction-github-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          target_branch: github-pages
-          build_dir: public
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          path: ./public
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
